@@ -1,7 +1,8 @@
 const express = require('express');
 const app = express();
 const port = 3000;
-
+const jwt = require('jsonwebtoken');
+const JWT_SECRET = 'randomvatanmalik'
 // Middleware to parse request body
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -18,8 +19,10 @@ app.post('/signin', (req, res) => {
     }
     const foundUser = users.find(u => u.username === username && u.password === password);
     if (foundUser) {
-        const token = generateToken();
-        foundUser.token = token;
+        const token = jwt.sign({
+            username: username
+        }, JWT_SECRET)
+        // foundUser.token = token;
         res.json({ token: token });
     } else {
         res.status(401).json({ message: 'Invalid credentials' });
@@ -49,10 +52,11 @@ app.post('/signup', (req, res) => {
 
 // Move the following route and listen function outside of the signup route
 app.get('/me', (req, res) => {
-    const token = req.headers.token;
-    const foundUser = users.find(user => user.token === token);
-    if (foundUser) {
-        res.json(foundUser);
+    const token = req.headers.token;   //jwt
+    const decodedInformation = jwt.verify(token, JWT_SECRET);
+    const username = decodedInformation.username
+    if (username) {
+        res.json(username);
     } else {
         res.status(404).json({ message: 'User not found' });
     }
