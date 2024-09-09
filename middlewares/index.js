@@ -1,5 +1,21 @@
 const express = require('express');
 const app = express();
+
+let requestCount = 0;
+
+
+//middleware function
+
+function loggermiddleware(req, res, next) {
+    console.log("Methos is:" + req.method);;
+    console.log("hsot is:" + req.url);
+    console.log(new Date());
+
+    next();
+}
+app.use(loggermiddleware);
+
+
 app.get('/sum', function (req, res) {
     const a = parseInt(req.query.a);
     const b = parseInt(req.query.b);
