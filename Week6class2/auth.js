@@ -49,22 +49,37 @@ app.post('/signin', (req, res) => {
     }
 });
 
-app.get('/me', (req, res) => {
+
+function auth(req, res, next) {
     const token = req.headers.token;
     const decodedData = jwt.verify(token, JWT_SECRET);
     if (decodedData.username) {
-        let foundUser = null;
-        for (let i = 0; i < users.length; i++) {
-            if (users[i].username == decodedData.username) {
-                foundUser = users[i]
-            }
-        }
+        req.username = decodedData.username;
+        next()
+    } else {
         res.json({
-            username: foundUser.username,
-            password: foundUser.password
-        })
+            message: "you are not logged in"
 
+        })
     }
+}
+
+
+
+app.get('/me', auth, (req, res) => {
+
+    let foundUser = null;
+    for (let i = 0; i < users.length; i++) {
+        if (users[i].username == decodedData.username) {
+            foundUser = users[i]
+        }
+    }
+    res.json({
+        username: foundUser.username,
+        password: foundUser.password
+    })
+
+
 
 });
 
