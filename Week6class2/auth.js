@@ -64,7 +64,9 @@ function auth(req, res, next) {
     }
 }
 
-
+function logger(req, res, next){
+    console.log(`${req.method} request came `)
+}
 
 app.get('/me', auth, (req, res) => {
 
